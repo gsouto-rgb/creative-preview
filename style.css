@@ -51,6 +51,33 @@
   color: rgba(255,255,255,.7);
 }
 
+#download-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+
+  background: #FFC806;
+  color: #000;
+
+  border: none;
+  border-radius: 10px;
+
+  padding: 12px 16px;
+
+  font-weight: bold;
+  cursor: pointer;
+
+  box-shadow: 0 10px 25px rgba(0,0,0,.3);
+
+  z-index: 9999;
+
+  transition: .2s;
+}
+
+#download-btn:hover {
+  transform: scale(1.05);
+}
+
 /* ================================================= */
 /* TOOLBAR */
 /* ================================================= */
