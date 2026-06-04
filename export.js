@@ -2,213 +2,194 @@
 /* CONFIGURAÇÃO */
 /* ================================================= */
 
-const DOWNLOAD_PASSWORD = "evolve2026";
-
-/* Nome do projeto (pode depois vir de input) */
+const DOWNLOAD_PASSWORD = "0";
 const PROJECT_NAME = "Creative_HTML5";
+
+const FORMATS = [
+  "120x600",
+  "160x600",
+  "300x600",
+  "300x250",
+  "300x100",
+  "320x100",
+  "320x50",
+  "728x90",
+  "970x250",
+  "980x90"
+];
 
 /* ================================================= */
 /* BOTÃO */
 /* ================================================= */
 
-const downloadBtn = document.getElementById("download-btn");
+const downloadBtn =
+document.getElementById("download-btn");
+
+/* ================================================= */
+/* CLICK PRINCIPAL */
+/* ================================================= */
 
 downloadBtn.addEventListener("click", async () => {
 
-    /* ======================================== */
-    /* 1. SENHA */
-    /* ======================================== */
+  const password = prompt("Digite a senha para exportar:");
 
-    const password = prompt("Digite a senha para exportar o HTML5:");
+  if (password !== DOWNLOAD_PASSWORD) {
+    alert("Senha incorreta");
+    return;
+  }
 
-    if (password !== DOWNLOAD_PASSWORD) {
-        alert("Senha incorreta.");
-        return;
-    }
+  await createMasterZip();
+});
 
-    /* ======================================== */
-    /* 2. FORMATS (AGÊNCIA LEVEL) */
-    /* ======================================== */
+/* ================================================= */
+/* MASTER ZIP (1 arquivo com todos os formatos) */
+/* ================================================= */
 
-    const formats = [
-        "120x600",
-        "160x600",
-        "300x100",
-        "300x250",
-        "300x600",
-        "320x50",
-        "320x100",
-        "728x90",
-        "970x250",
-        "980x90"
-    ];
+async function createMasterZip() {
 
-    /* ======================================== */
-    /* 3. ZIP INIT */
-    /* ======================================== */
+  console.log("Iniciando exportação MASTER ZIP...");
 
-    const zip = new JSZip();
+  const zip = new JSZip();
 
-    const assetsFolder = zip.folder("assets");
+  for (const format of FORMATS) {
 
-    /* ======================================== */
-    /* 4. HTML BUILDER (DINÂMICO) */
-    /* ======================================== */
+    console.log(`Adicionando formato: ${format}`);
 
-    let htmlCreatives = "";
+    const width = format.split("x")[0];
+    const height = format.split("x")[1];
 
-    formats.forEach(format => {
+    /* ========================================= */
+    /* PASTA DO FORMATO */
+    /* ========================================= */
 
-        htmlCreatives += `
-<div class="creative-container" data-format="${format}" style="width:${format.split("x")[0]}px;height:${format.split("x")[1]}px;">
-    <div class="prod"></div>
-    <div class="copy"></div>
-    <div class="logo"></div>
-    <div class="cta"></div>
-</div>
-        `;
-    });
+    const folder = zip.folder(format);
+    const assets = folder.folder("assets");
+
+    /* ========================================= */
+    /* HTML */
+    /* ========================================= */
 
     const html = `
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="ad.size" content="width=${width},height=${height}">
 <title>${PROJECT_NAME}</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-${htmlCreatives}
+<a id="click-area">
+
+  <div class="creative-container"
+       style="width:${width}px;height:${height}px">
+
+      <div class="prod"></div>
+      <div class="copy"></div>
+      <div class="logo"></div>
+      <div class="cta"></div>
+
+  </div>
+
+</a>
+
+<script>
+var clickTag = "https://www.evolveads.com.br";
+</script>
 
 <script src="script.js"></script>
 
 </body>
 </html>
-    `.trim();
+`.trim();
 
-    zip.file("index.html", html);
+    folder.file("index.html", html);
 
-    /* ======================================== */
-    /* 5. CSS (PRODUÇÃO LIMPA) */
-    /* ======================================== */
+    /* ========================================= */
+    /* CSS (compartilhado) */
+    /* ========================================= */
 
-    const css = `
-body {
-  margin: 0;
-  padding: 0;
-  background: #fff;
-  font-family: Arial;
-}
+    const cssResponse = await fetch("./banner.css");
+    const cssContent = await cssResponse.text();
 
-.creative-container {
-  position: relative;
-  overflow: hidden;
-  margin: 20px;
-  display: inline-block;
-}
+    folder.file("style.css", cssContent);
 
-.prod, .copy, .logo, .cta {
-  position: absolute;
-  inset: 0;
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-    `.trim();
-
-    zip.file("style.css", css);
-
-    /* ======================================== */
-    /* 6. SCRIPT DE RENDER (PRODUÇÃO) */
-    /* ======================================== */
+    /* ========================================= */
+    /* SCRIPT (dinâmico por formato) */
+    /* ========================================= */
 
     const js = `
-const creatives = document.querySelectorAll(".creative-container");
+const creative =
+document.querySelector(".creative-container");
 
-creatives.forEach((creative) => {
+const format = "${format}";
 
-    const format = creative.dataset.format;
-
-    creative.querySelector(".logo").style.backgroundImage =
-        \`url('./assets/\${format}logo.png')\`;
-
-    creative.querySelector(".copy").style.backgroundImage =
-        \`url('./assets/\${format}copy.png')\`;
-
-    creative.querySelector(".prod").style.backgroundImage =
-        \`url('./assets/\${format}img.png')\`;
-
-    creative.querySelector(".cta").style.backgroundImage =
-        \`url('./assets/\${format}cta.png')\`;
+document.getElementById("click-area")
+.addEventListener("click", () => {
+  window.open(clickTag, "_blank");
 });
-    `.trim();
 
-    zip.file("script.js", js);
+creative.querySelector(".logo").style.backgroundImage =
+\`url('./assets/\${format}logo.png')\`;
 
-    /* ======================================== */
-/* 7. EXPORTA AS IMAGENS REAIS */
-/* ======================================== */
+creative.querySelector(".copy").style.backgroundImage =
+\`url('./assets/\${format}copy.png')\`;
 
-for (const format of formats) {
+creative.querySelector(".prod").style.backgroundImage =
+\`url('./assets/\${format}img.png')\`;
+
+creative.querySelector(".cta").style.backgroundImage =
+\`url('./assets/\${format}cta.png')\`;
+`.trim();
+
+    folder.file("script.js", js);
+
+    /* ========================================= */
+    /* ASSETS */
+    /* ========================================= */
 
     const files = [
-        `${format}logo.png`,
-        `${format}copy.png`,
-        `${format}img.png`,
-        `${format}cta.png`
+      `${format}logo.png`,
+      `${format}copy.png`,
+      `${format}img.png`,
+      `${format}cta.png`
     ];
 
     for (const fileName of files) {
 
-        try {
+      try {
 
-            const response =
-                await fetch(`./assets/${fileName}`);
+        const response = await fetch(`./assets/${fileName}`);
 
-            if (!response.ok) {
-
-                console.warn(
-                    `Arquivo não encontrado: ${fileName}`
-                );
-
-                continue;
-            }
-
-            const blob =
-                await response.blob();
-
-            assetsFolder.file(
-                fileName,
-                blob
-            );
-
-        } catch (err) {
-
-            console.error(
-                `Erro ao exportar ${fileName}`,
-                err
-            );
+        if (!response.ok) {
+          console.warn(`Asset não encontrado: ${fileName}`);
+          continue;
         }
+
+        const blob = await response.blob();
+        assets.file(fileName, blob);
+
+      } catch (err) {
+        console.error(`Erro ao carregar asset: ${fileName}`, err);
+      }
     }
+  }
+
+  /* ================================================= */
+  /* DOWNLOAD FINAL */
+  /* ================================================= */
+
+  const blob = await zip.generateAsync({ type: "blob" });
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${PROJECT_NAME}_ALL_FORMATS.zip`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  console.log("Exportação concluída com sucesso!");
 }
-
-    /* ======================================== */
-    /* 8. DOWNLOAD */
-    /* ======================================== */
-
-    const fileName = `${PROJECT_NAME}_${Date.now()}.zip`;
-
-    zip.generateAsync({ type: "blob" }).then((content) => {
-
-        const link = document.createElement("a");
-
-        link.href = URL.createObjectURL(content);
-        link.download = fileName;
-
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
-
-});
