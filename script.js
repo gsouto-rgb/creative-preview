@@ -219,7 +219,6 @@ document.getElementById("replay-btn");
 replayBtn.addEventListener(
   "click",
   () => {
-
     document
       .querySelectorAll(
         ".prod, .copy, .logo, .cta"
