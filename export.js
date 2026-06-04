@@ -147,16 +147,51 @@ creatives.forEach((creative) => {
     zip.file("script.js", js);
 
     /* ======================================== */
-    /* 7. ASSETS PLACEHOLDER (opcional organização) */
-    /* ======================================== */
+/* 7. EXPORTA AS IMAGENS REAIS */
+/* ======================================== */
 
-    formats.forEach(format => {
+for (const format of formats) {
 
-        assetsFolder.file(`${format}logo.png`, "");
-        assetsFolder.file(`${format}copy.png`, "");
-        assetsFolder.file(`${format}img.png`, "");
-        assetsFolder.file(`${format}cta.png`, "");
-    });
+    const files = [
+        `${format}logo.png`,
+        `${format}copy.png`,
+        `${format}img.png`,
+        `${format}cta.png`
+    ];
+
+    for (const fileName of files) {
+
+        try {
+
+            const response =
+                await fetch(`./assets/${fileName}`);
+
+            if (!response.ok) {
+
+                console.warn(
+                    `Arquivo não encontrado: ${fileName}`
+                );
+
+                continue;
+            }
+
+            const blob =
+                await response.blob();
+
+            assetsFolder.file(
+                fileName,
+                blob
+            );
+
+        } catch (err) {
+
+            console.error(
+                `Erro ao exportar ${fileName}`,
+                err
+            );
+        }
+    }
+}
 
     /* ======================================== */
     /* 8. DOWNLOAD */
