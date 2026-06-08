@@ -232,4 +232,306 @@ replayBtn.addEventListener(
         el.style.animation = "";
       });
   }
+)
+
+/* ================================================= */
+/* VIEW SWITCHER */
+/* ================================================= */
+
+const viewButtons =
+document.querySelectorAll(
+    ".view-btn"
 );
+
+const allPreview =
+document.getElementById(
+    "all-preview"
+);
+
+const mobilePreview =
+document.getElementById(
+    "mobile-preview"
+);
+
+const desktopPreview =
+document.getElementById(
+    "desktop-preview"
+);
+
+/* estado inicial */
+
+allPreview.style.display =
+"block";
+
+mobilePreview.style.display =
+"none";
+
+desktopPreview.style.display =
+"none";
+
+viewButtons.forEach((button) => {
+
+    button.addEventListener(
+        "click",
+        () => {
+
+            viewButtons.forEach(btn =>
+                btn.classList.remove(
+                    "active"
+                )
+            );
+
+            button.classList.add(
+                "active"
+            );
+
+            const view =
+            button.dataset.view;
+
+            allPreview.style.display =
+            "none";
+
+            mobilePreview.style.display =
+            "none";
+
+            desktopPreview.style.display =
+            "none";
+
+            if (view === "all") {
+
+                allPreview.style.display =
+                "block";
+
+            }
+
+            if (view === "mobile") {
+
+                mobilePreview.style.display =
+                "flex";
+
+            }
+
+            if (view === "desktop") {
+
+                desktopPreview.style.display =
+                "block";
+
+            }
+
+        }
+    );
+
+});
+
+/* ======================================== */
+/* DESKTOP PREVIEW */
+/* ======================================== */
+
+function setupDesktopPreview() {
+
+    const topSlot =
+    document.getElementById(
+        "desktop-top-banner"
+    );
+
+    const sideSlot =
+    document.getElementById(
+        "desktop-side-banner"
+    );
+
+    const inlineSlot =
+    document.getElementById(
+        "desktop-inline-banner"
+    );
+
+    const banner728Slot =
+    document.getElementById(
+        "desktop-728-banner"
+    );
+
+    const inscreenSlot =
+    document.getElementById(
+        "desktop-inscreen-slot"
+    );
+
+    const leaderboard =
+    document.querySelector(
+        '.creative-container[data-format="970x250"]'
+    );
+
+    const sidebar =
+    document.querySelector(
+        '.creative-container[data-format="300x600"]'
+    );
+
+    const articleBanner =
+    document.querySelector(
+        '.creative-container[data-format="300x250"]'
+    );
+
+    const banner728 =
+    document.querySelector(
+        '.creative-container[data-format="728x90"]'
+    );
+
+    const inscreenBanner =
+    document.querySelector(
+        '.creative-container[data-format="980x90"]'
+    );
+
+    /* TOPO */
+
+    if (
+        leaderboard &&
+        topSlot
+    ) {
+
+        topSlot.appendChild(
+            leaderboard.cloneNode(true)
+        );
+
+    }
+
+    /* SIDEBAR */
+
+    if (
+        sidebar &&
+        sideSlot
+    ) {
+
+        sideSlot.appendChild(
+            sidebar.cloneNode(true)
+        );
+
+    }
+
+    /* 300x250 */
+
+    if (
+        articleBanner &&
+        inlineSlot
+    ) {
+
+        inlineSlot.appendChild(
+            articleBanner.cloneNode(true)
+        );
+
+    }
+
+    /* 728x90 */
+
+    if (
+        banner728 &&
+        banner728Slot
+    ) {
+
+        banner728Slot.appendChild(
+            banner728.cloneNode(true)
+        );
+
+    }
+
+    /* IN-SCREEN 980x90 */
+
+    if (
+        inscreenBanner &&
+        inscreenSlot
+    ) {
+
+        inscreenSlot.appendChild(
+            inscreenBanner.cloneNode(true)
+        );
+
+    }
+
+    console.log(
+        "Desktop Preview carregado"
+    );
+
+}
+
+setupDesktopPreview();
+
+/* ======================================== */
+/* MOBILE PREVIEW */
+/* ======================================== */
+
+function setupMobilePreview() {
+
+    const slot1 =
+document.getElementById(
+    "mobile-banner-slot"
+);
+
+const slot2 =
+document.getElementById(
+    "mobile-banner-slot-2"
+);
+
+const slot3 =
+document.getElementById(
+    "mobile-banner-slot-3"
+);
+
+const banner320 =
+document.querySelector(
+    '.creative-container[data-format="320x100"]'
+);
+
+const banner250 =
+document.querySelector(
+    '.creative-container[data-format="300x250"]'
+);
+
+const banner600 =
+document.querySelector(
+    '.creative-container[data-format="300x600"]'
+);
+
+if (banner320 && slot1) {
+
+    slot1.appendChild(
+        banner320.cloneNode(true)
+    );
+
+}
+
+if (banner250 && slot2) {
+
+    slot2.appendChild(
+        banner250.cloneNode(true)
+    );
+
+}
+
+if (banner600 && slot3) {
+
+    slot3.appendChild(
+        banner600.cloneNode(true)
+    );
+
+}
+}
+
+const inscreenSlot =
+document.getElementById(
+    "mobile-inscreen-slot"
+);
+
+const banner320x50 =
+document.querySelector(
+    '.creative-container[data-format="320x50"]'
+);
+
+if (
+    banner320x50 &&
+    inscreenSlot
+) {
+
+    inscreenSlot.appendChild(
+        banner320x50.cloneNode(true)
+    );
+
+}
+
+setupMobilePreview();
